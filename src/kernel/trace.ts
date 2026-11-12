@@ -70,6 +70,7 @@ export const initialPlayerState: PlayerState = {
 };
 
 export type PlayerAction =
+  | { type: 'tick' }
   | { type: 'next' }
   | { type: 'prev' }
   | { type: 'play' }
@@ -80,11 +81,16 @@ export type PlayerAction =
 
 export function playerReducer(state: PlayerState, action: PlayerAction, total: number): PlayerState {
   switch (action.type) {
+    case 'tick':
+      // Timer ticks must not use manual next, which intentionally pauses playback.
+      if (!state.playing || total <= 0) return state;
+      return { ...state, index: Math.min(state.index + 1, total - 1) };
     case 'next':
       return { ...state, playing: false, index: Math.min(state.index + 1, total - 1) };
     case 'prev':
       return { ...state, playing: false, index: Math.max(state.index - 1, -1) };
     case 'play':
+      if (total <= 0) return { ...state, playing: false, index: -1 };
       // 已到终点则重新播放
       if (state.index >= total - 1) return { ...state, playing: true, index: -1 };
       return { ...state, playing: true };

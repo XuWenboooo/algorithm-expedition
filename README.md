@@ -24,7 +24,7 @@ npm test
 npm run build
 ```
 
-`npm test` 先从源码构建 19 个 C++17 参考程序，再执行 97 项测试（含 18 项 C++ 对拍）。编译器或参考程序缺失会失败，不会伪报全部通过。Linux 使用 g++；Windows 自动发现已安装的 Visual Studio C++ 工具，也可设置 `CXX` 指向 g++。运行网站本身不需要 C++ 编译器。
+`npm test` 先从源码构建 19 个 C++17 参考程序，再执行 105 项测试（含 18 项 C++ 对拍）。编译器或参考程序缺失会失败，不会伪报全部通过。Linux 使用 g++；Windows 自动发现已安装的 Visual Studio C++ 工具，也可设置 `CXX` 指向 g++。运行网站本身不需要 C++ 编译器。
 
 ## GitHub Pages 发布
 

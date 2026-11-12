@@ -32,7 +32,7 @@ export function Player<S>({ events, predict, children, onFinish, resetKey }: Pla
       onFinish?.();
       return;
     }
-    const t = setTimeout(() => dispatch({ type: 'next' }), st.speed);
+    const t = setTimeout(() => dispatch({ type: 'tick' }), st.speed);
     return () => clearTimeout(t);
   }, [st.playing, st.index, st.speed, events.length, onFinish]);
 
