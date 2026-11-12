@@ -1,0 +1,13 @@
+node_modules/
+dist/
+scripts/cpp/bin/
+*.obj
+*.exe
+*.pdb
+*.ilk
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+coverage/

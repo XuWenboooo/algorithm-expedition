@@ -1,0 +1,33 @@
+{
+  "name": "algorithm-expedition",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "算法远征：从零基础 C++ 到 CCPC 训练的中文交互式算法学习平台（本地优先）",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build:cpp": "node scripts/build-cpp.mjs",
+    "pretest": "npm run build:cpp",
+    "check": "npm test && npm run build"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.0",
+    "vitest": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
