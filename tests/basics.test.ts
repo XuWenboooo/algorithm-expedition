@@ -75,7 +75,7 @@ describe('斐波那契：朴素 vs 记忆化', () => {
       const memo = buildFibTrace(n, 'memo');
       expect(naive[naive.length - 1].state.result).toBe(memo[memo.length - 1].state.result);
     }
-  });
+  }, 20_000); // n=18 materializes an exponential trace; allow slower shared CI runners.
   it('斐波那契数值正确（f(10)=55）', () => {
     const ev = buildFibTrace(10, 'memo');
     expect(ev[ev.length - 1].state.result).toBe(55);
