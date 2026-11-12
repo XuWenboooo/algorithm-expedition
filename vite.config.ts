@@ -9,7 +9,7 @@ export default defineConfig({
   preview: { port: 4173, strictPort: true, host: '127.0.0.1' },
   build: { outDir: 'dist', sourcemap: false, chunkSizeWarningLimit: 1500 },
   test: {
-    include: ['tests/**/*.test.ts'],
+    include: ['tests/**/*.test.{ts,tsx}'],
     environment: 'node',
   },
 });

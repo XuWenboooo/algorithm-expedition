@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { ProgressProvider } from './progress/store';
+import { ProgressProvider, useProgress } from './progress/store';
 import { Home } from './pages/Home';
+import { RoadmapPage } from './pages/RoadmapPage';
+import { ProblemsPage } from './pages/ProblemsPage';
+import { CoursePracticeLinks } from './practice/ProblemCard';
 import { KmpPage } from './pages/KmpPage';
 import { ProgressPage, ReviewPage } from './pages/ProgressPage';
 import { TeamPage } from './pages/TeamPage';
@@ -20,7 +23,7 @@ function useHashRoute(): string {
 
 function TopBar({ route }: { route: string }) {
   const link = (href: string, label: string) => (
-    <a href={href} className={route === href || (href === '#/' && route === '#/') ? 'active' : ''}>{label}</a>
+    <a href={href} aria-current={route === href ? 'page' : undefined} className={route === href || (href === '#/' && route === '#/') ? 'active' : ''}>{label}</a>
   );
   return (
     <div className="topbar">
@@ -28,6 +31,8 @@ function TopBar({ route }: { route: string }) {
         <a href="#/" className="logo">⛰️ 算法远征<span className="sub">Algorithm Expedition · 本地优先 · 中文</span></a>
         <nav className="nav" aria-label="主导航">
           {link('#/', '总览地图')}
+          {link('#/roadmap', '学习路线')}
+          {link('#/problems', '题单实战')}
           {link('#/practice', '练习')}
           {link('#/review', '错题与复习')}
           {link('#/progress', '训练记录')}
@@ -58,6 +63,7 @@ function CoursePageRouter({ id }: { id: string }) {
             平台诚实标注它的状态，不会用占位页面冒充课程。先修课程：{meta.deps.map((d) => courseById(d)?.title).join('、') || '无'}。</p>
           <p><a href="#/">← 返回总览地图</a></p>
         </div>
+        <CoursePracticeLinks courseId={id} />
       </div>
     );
   }
@@ -77,12 +83,21 @@ function CoursePageRouter({ id }: { id: string }) {
   );
 }
 
+function StorageNotice() {
+  const { storageError } = useProgress();
+  return storageError ? <div className="container storage-notice" role="alert">{storageError} <a href="#/progress">打开备份与恢复 →</a></div> : null;
+}
+
 export function App() {
-  const route = useHashRoute();
+  const hash = useHashRoute();
+  const [route, search = ''] = hash.split('?');
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'auto' }); }, [route]);
   let page: React.ReactNode;
   if (route.startsWith('#/course/')) {
     page = <CoursePageRouter id={route.slice('#/course/'.length)} />;
-  } else if (route === '#/practice') page = <ProgressPage mode="practice" />;
+  } else if (route === '#/roadmap') page = <RoadmapPage />;
+  else if (route === '#/problems') page = <ProblemsPage search={search} />;
+  else if (route === '#/practice') page = <ProgressPage mode="practice" />;
   else if (route === '#/review') page = <ReviewPage />;
   else if (route === '#/progress') page = <ProgressPage mode="progress" />;
   else if (route === '#/team') page = <TeamPage />;
@@ -90,8 +105,10 @@ export function App() {
 
   return (
     <ProgressProvider>
+      <a className="skip-link" href="#main-content" onClick={(e) => { e.preventDefault(); document.getElementById('main-content')?.focus(); }}>跳到主要内容</a>
       <TopBar route={route.split('/').slice(0, 2).join('/')} />
-      {page}
+      <StorageNotice />
+      <main id="main-content" tabIndex={-1}>{page}</main>
     </ProgressProvider>
   );
 }

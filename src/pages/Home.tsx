@@ -1,3 +1,4 @@
+import { EXTERNAL_PROBLEMS, LEARNING_STAGES } from '../practice/catalog';
 import { COURSES, STAGES, READY_COUNT } from '../courses/registry';
 
 export function Home() {
@@ -7,7 +8,7 @@ export function Home() {
 
   return (
     <div className="container">
-      <h1 style={{ marginTop: 24 }}>⛰️ 算法远征 · 总览地图</h1>
+      <header className="page-intro home-intro"><p className="eyebrow">ALGORITHM EXPEDITION</p><h1>每一步，都看懂算法</h1><p>先看轨迹、再写代码、最后到真实题目中验证。把零散知识变成一条走得下去的学习路线。</p><div className="hero-actions"><a className="pbtn primary" href="#/roadmap">从学习路线开始 →</a><a className="pbtn" href="#/problems">洛谷 · 牛客题单</a></div><div className="hero-stats"><span><b>{READY_COUNT}</b> 门已实现课程</span><span><b>{EXTERNAL_PROBLEMS.length}</b> 道精选外部题</span><span><b>{LEARNING_STAGES.length}</b> 站学习与训练路线</span></div></header><h2>完整课程地图</h2>
       <p>
         从零基础 C++ 到区域赛训练的完整知识路线图。<b>{READY_COUNT} 门课程已真正实现</b>
         （其中 {ready.filter((c) => c.id !== 'team-training').length} 门含可交互可视化实验室 + 完整推导 + 渐进练习 + 测试验证；1 门为团队训练工具课），
@@ -31,7 +32,7 @@ export function Home() {
         return (
           <div className="card" key={st.id} data-testid={`stage-${st.id}`}>
             <h2 style={{ color: st.color }}>阶段 {st.id} · {st.name}</h2>
-            <table className="course-map">
+            <div className="table-scroll" tabIndex={0} aria-label="课程地图，可横向滚动"><table className="course-map">
               <thead>
                 <tr><th style={{ width: '26%' }}>课程</th><th style={{ width: '12%' }}>状态</th><th>内容</th><th style={{ width: '22%' }}>先修</th></tr>
               </thead>
@@ -51,7 +52,7 @@ export function Home() {
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </table></div>
           </div>
         );
       })}

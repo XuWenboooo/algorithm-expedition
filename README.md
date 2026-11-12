@@ -6,6 +6,16 @@
 
 本项目是训练工具，不保证竞赛成绩。未实现运行用户 C++ 代码的在线判题。
 
+## 学习路线与题单
+
+新增 8 站学习路线与 23 道洛谷/牛客题目，含知识点关联、练习目标和原创提示。题单支持搜索与平台/站次/课程/状态筛选；通过状态和一句复盘由学习者手动记录，纳入 JSON 备份。
+
+- 学习路线：https://xuwenboooo.github.io/algorithm-expedition/#/roadmap
+- 题单实战：https://xuwenboooo.github.io/algorithm-expedition/#/problems
+- 题面和评测在官方平台，本站不自动同步 AC。路线站次不代表官方难度。
+- 尚未完成课程明确标注规划，远期题目不等于本站已具备完整教学。
+- 来源、范围及维护说明见 docs/learning-route.md。
+
 ## 本地开发
 
 需要 Node.js 22 或更新版本。
@@ -24,7 +34,7 @@ npm test
 npm run build
 ```
 
-`npm test` 先从源码构建 19 个 C++17 参考程序，再执行 105 项测试（含 18 项 C++ 对拍）。编译器或参考程序缺失会失败，不会伪报全部通过。Linux 使用 g++；Windows 自动发现已安装的 Visual Studio C++ 工具，也可设置 `CXX` 指向 g++。运行网站本身不需要 C++ 编译器。
+`npm test` 先从源码构建 19 个 C++17 参考程序，再执行 162 项测试（含 18 项 C++ 对拍）。编译器或参考程序缺失会失败，不会伪报全部通过。Linux 使用 g++；Windows 自动发现已安装的 Visual Studio C++ 工具，也可设置 `CXX` 指向 g++。运行网站本身不需要 C++ 编译器。
 
 ## GitHub Pages 发布
 

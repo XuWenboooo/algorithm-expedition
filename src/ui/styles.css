@@ -200,3 +200,79 @@ details.fold summary { cursor: pointer; font-weight: 600; color: var(--brand); }
 .cell.match .state-mark { color: var(--ok); }
 .cell.mismatch .state-mark { color: var(--bad); }
 .cell.active .state-mark { color: var(--brand); }
+
+/* Learning route and curated practice: keep long content within narrow screens. */
+html { scroll-padding-top: 150px; }
+main:focus { outline: none; }
+button, select, input, textarea { font: inherit; }
+select:focus-visible, summary:focus-visible, .table-scroll:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+.skip-link { position: fixed; left: 16px; top: -90px; z-index: 100; background: var(--ink); color: white; padding: 12px 16px; border-radius: 8px; }
+.skip-link:focus { top: 8px; }
+.page-intro { padding: 35px 0 23px; max-width: 900px; }
+.page-intro h1 { font-size: clamp(29px, 4vw, 42px); letter-spacing: -0.04em; margin: 8px 0 15px; }
+.page-intro > p:not(.eyebrow) { font-size: 17px; color: var(--ink-2); max-width: 760px; }
+.eyebrow { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--brand); margin: 0; }
+.hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 21px 0 6px; }
+a.pbtn { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.home-intro { max-width: none; margin: 22px 0 30px; padding: 32px; border: 1px solid #d6e0fa; border-radius: 18px; background: linear-gradient(125deg, #f2f6ff, #fff 70%); }
+.hero-stats { display: flex; flex-wrap: wrap; gap: 25px; border-top: 1px solid var(--line); padding-top: 20px; margin-top: 25px; color: var(--ink-2); font-size: 13px; }
+.hero-stats b { display: inline-block; font-size: 23px; color: var(--ink); margin-right: 4px; }
+.notice, .storage-notice { border-left: 4px solid var(--warn); background: var(--warn-soft); border-radius: 7px; padding: 12px 16px; font-size: 13px; }
+.storage-notice { margin-top: 12px; padding-bottom: 12px; }
+.section-heading { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.section-heading h2 { margin-bottom: 0; }
+.problem-filters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 18px 0 8px; }
+.problem-filters .search-field { grid-column: 1 / -1; }
+.field { min-width: 0; }
+.field input, .field select, .field textarea { min-width: 0; max-width: 100%; }
+.problem-filters select { width: 100%; }
+.problem-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 16px 0; }
+.problem-card { min-width: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); overflow-wrap: anywhere; }
+.problem-card h3 { margin: 13px 0 9px; font-size: 19px; }
+.problem-card > p { margin: 9px 0; }
+.problem-card.compact { box-shadow: none; padding: 15px; }
+.problem-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.problem-meta .tag { margin: 0; }
+.problem-meta .tag:last-child { margin-left: auto; }
+.problem-notes { margin-top: 12px; }
+.problem-notes textarea { resize: vertical; width: 100%; }
+.course-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+.course-chips a { border-radius: 6px; background: var(--brand-soft); padding: 3px 8px; font-size: 12px; }
+.source-line { font-size: 11px; border-top: 1px solid var(--line); padding-top: 12px; }
+.empty-state { text-align: center; padding: 32px 20px; }
+.route-entry-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
+.route-entry-grid p { font-size: 14px; color: var(--ink-2); }
+.route-jumps { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+.route-jumps a { padding: 7px 11px; border: 1px solid var(--line); border-radius: 7px; background: white; font-size: 13px; }
+.route-stage { border-top: 3px solid var(--brand); scroll-margin-top: 140px; }
+.route-stage h2 { margin-top: 7px; }
+.route-stage h3 { margin-top: 22px; }
+.route-course-list { padding-left: 20px; }
+.route-course-list li { margin: 7px 0; }
+.route-course-list .tag { margin-left: 8px; }
+.route-problems { padding-left: 22px; }
+.route-problems li { padding: 9px 0; border-bottom: 1px solid var(--line); }
+.route-problems li > span:first-child { color: var(--ok); padding-right: 8px; }
+.route-problems li > .muted { margin-left: 8px; }
+.route-problems p { margin: 5px 0 0; }
+.checkpoint { border-radius: 8px; background: var(--ok-soft); padding: 12px 16px; margin-top: 22px; }
+.checkpoint h3 { margin: 0; }
+.checkpoint p { margin-bottom: 0; }
+.table-scroll { max-width: 100%; overflow-x: auto; margin: 10px 0; }
+.table-scroll .course-map { min-width: 610px; }
+.card, .container { min-width: 0; }
+@media (max-width: 760px) {
+  .problem-grid, .route-entry-grid { grid-template-columns: 1fr; }
+  .problem-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .topbar-inner { gap: 6px; padding: 8px 12px; }
+  .logo .sub { display: none; }
+  .nav { flex-wrap: nowrap; overflow-x: auto; width: 100%; padding: 2px 0; }
+  .nav a { white-space: nowrap; flex-shrink: 0; padding: 8px 10px; }
+  .home-intro { padding: 22px 18px; }
+  .card { padding: 16px; }
+  .problem-card { padding: 17px; }
+  .hero-stats { gap: 15px; }
+  .pbtn, .speedsel, .field input, .field select { min-height: 42px; }
+  .field textarea { font-size: 16px; }
+  .section-heading .small { width: 100%; }
+}

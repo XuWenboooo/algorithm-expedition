@@ -1,3 +1,4 @@
+import { EXTERNAL_PROBLEMS } from '../practice/catalog';
 import { useRef, useState } from 'react';
 import { COURSES, courseById } from '../courses/registry';
 import { useProgress, downloadText, validateImported, DIMENSIONS } from '../progress/store';
@@ -13,12 +14,14 @@ export function ProgressPage({ mode }: { mode: 'progress' | 'practice' }) {
     reader.onload = () => {
       const v = validateImported(String(reader.result));
       if (v.ok) {
+        if (!window.confirm('导入会替换当前浏览器中的全部课程和题单记录。建议先导出备份。确定继续吗？')) { setImportMsg('已取消导入，现有记录未改变。'); return; }
         importData(v.data);
         setImportMsg('✅ 导入成功，进度已恢复。');
       } else {
         setImportMsg(`❌ ${v.error}`);
       }
     };
+    reader.onerror = () => setImportMsg('❌ 无法读取文件，请重新选择有效的 JSON 备份。');
     reader.readAsText(f);
   };
 
@@ -32,7 +35,7 @@ export function ProgressPage({ mode }: { mode: 'progress' | 'practice' }) {
         <>
           <div className="card">
             <h2>各课程掌握维度（自评）</h2>
-            <table className="course-map" data-testid="progress-table">
+            <div className="table-scroll" tabIndex={0} aria-label="训练记录，可横向滚动"><table className="course-map" data-testid="progress-table">
               <thead>
                 <tr><th>课程</th>{DIMENSIONS.map((d) => <th key={d.key} style={{ textAlign: 'center' }}>{d.label}</th>)}<th>练习通过</th><th>自主实验</th></tr>
               </thead>
@@ -53,7 +56,7 @@ export function ProgressPage({ mode }: { mode: 'progress' | 'practice' }) {
                   );
                 })}
               </tbody>
-            </table>
+            </table></div>
             <p className="muted small">维度含义：阅读 / 理解 / 实现 / 应用 / 迁移 —— 由你在课程页自行勾选，平台不以点击判定掌握。</p>
           </div>
         </>
@@ -62,7 +65,7 @@ export function ProgressPage({ mode }: { mode: 'progress' | 'practice' }) {
       {mode === 'practice' && (
         <div className="card">
           <h2>全部练习索引（点击进入课程页完成）</h2>
-          <table className="course-map">
+          <div className="table-scroll" tabIndex={0} aria-label="练习列表，可横向滚动"><table className="course-map">
             <thead><tr><th>课程</th><th>练习</th><th>状态</th></tr></thead>
             <tbody>
               {readyCourses.flatMap((c) => {
@@ -72,7 +75,7 @@ export function ProgressPage({ mode }: { mode: 'progress' | 'practice' }) {
                   return [(
                     <tr key={c.id}>
                       <td><a href={`#/course/${c.id}`}>{c.title}</a></td>
-                      <td className="muted small">3 道渐进练习待完成</td>
+                      <td className="muted small">{c.id === 'team-training' ? '团队训练工具与复盘' : '3 道渐进练习待完成'}</td>
                       <td className="muted">—</td>
                     </tr>
                   )];
@@ -88,11 +91,12 @@ export function ProgressPage({ mode }: { mode: 'progress' | 'practice' }) {
                 ));
               })}
             </tbody>
-          </table>
+          </table></div>
           <p className="muted small">练习详细内容在各自课程页内（含分层提示与解析）。本页只做总览。</p>
         </div>
       )}
 
+      <div className="card"><h2>洛谷 · 牛客题单进度（手动记录）</h2><p>已通过 {EXTERNAL_PROBLEMS.filter((p) => data.externalProblems?.[p.id]?.status === 'solved').length} / {EXTERNAL_PROBLEMS.length} 道；练习中 {EXTERNAL_PROBLEMS.filter((p) => data.externalProblems?.[p.id]?.status === 'attempted').length} 道。</p><p className="muted small">这是自评记录，不是官方 AC 同步。状态和一句复盘包含在下方 JSON 备份中。</p><a className="pbtn" href="#/problems">继续题单训练 →</a></div>
       <div className="card">
         <h2>💾 备份与恢复（重要！）</h2>
         <p className="small muted">
@@ -139,7 +143,7 @@ export function ReviewPage() {
         {mistakes.length === 0 ? (
           <p className="muted">还没有记录。在课程页底部"错因记录"里写下你踩过的坑——这是复习时最值钱的材料。</p>
         ) : (
-          <table className="course-map" data-testid="review-mistakes">
+          <div className="table-scroll" tabIndex={0} aria-label="错因记录，可横向滚动"><table className="course-map" data-testid="review-mistakes">
             <thead><tr><th>日期</th><th>课程</th><th>错因</th></tr></thead>
             <tbody>
               {mistakes.map((m, i) => (
@@ -150,7 +154,7 @@ export function ReviewPage() {
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         )}
       </div>
       <div className="card">

@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { CoursePracticeLinks } from '../practice/ProblemCard';
 import { CourseMeta } from './registry';
 import { Demo, ExerciseSpec } from './demoKit';
 import { DemoPanel, ExerciseList, NotesAndMistakes } from './demoKit';
@@ -100,6 +101,8 @@ export function StandardCoursePage({ spec }: { spec: CourseSpec }) {
         <ExerciseList exercises={spec.exercises} courseId={meta.id} />
         <ExerciseSummaryLine courseId={meta.id} total={spec.exercises.length} />
       </div>
+
+      <CoursePracticeLinks courseId={meta.id} />
 
       {spec.pitfalls && (
         <div className="card">

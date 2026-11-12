@@ -1,3 +1,5 @@
+import { emptyCourseProgress, normalizeAppData, validateImported } from './validation';
+export { validateImported } from './validation';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 /**
@@ -39,69 +41,46 @@ export interface CourseProgress {
   experiments: number; // 自主修改输入并完整观看的次数（仅作参考记录）
 }
 
+export type ExternalProblemStatus = 'todo' | 'attempted' | 'solved';
+export interface ExternalProblemRecord { status: ExternalProblemStatus; notes: string; updatedAt: string; }
+
 export interface AppData {
   version: 1;
   savedAt: string;
   courses: Record<string, CourseProgress>;
+  externalProblems?: Record<string, ExternalProblemRecord>;
 }
 
 const STORAGE_KEY = 'algo-expedition-v1';
 
-function emptyCourseProgress(): CourseProgress {
-  return {
-    dims: { read: false, understand: false, implement: false, apply: false, transfer: false },
-    exercises: {},
-    notes: '',
-    mistakes: [],
-    experiments: 0,
-  };
-}
-
 export function emptyAppData(): AppData {
-  return { version: 1, savedAt: new Date().toISOString(), courses: {} };
+  return { version: 1, savedAt: new Date().toISOString(), courses: {}, externalProblems: {} };
 }
 
-export function loadAppData(): AppData {
+export interface StorageSnapshot { data: AppData; error: string | null; blocked: boolean; }
+/** Preserve corrupt raw data rather than silently replacing it with an empty record. */
+export function readStorageSnapshot(): StorageSnapshot {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return emptyAppData();
-    const d = JSON.parse(raw) as AppData;
-    if (d.version !== 1 || typeof d.courses !== 'object' || d.courses === null) return emptyAppData();
-    // 合并缺失字段（向后兼容）
-    const courses: Record<string, CourseProgress> = {};
-    for (const [k, v] of Object.entries(d.courses)) {
-      const base = emptyCourseProgress();
-      courses[k] = {
-        ...base,
-        ...v,
-        dims: { ...base.dims, ...(v.dims || {}) },
-        exercises: v.exercises || {},
-        mistakes: Array.isArray(v.mistakes) ? v.mistakes : [],
-      };
-    }
-    return { version: 1, savedAt: d.savedAt || new Date().toISOString(), courses };
+    if (!raw) return { data: emptyAppData(), error: null, blocked: false };
+    const parsed = validateImported(raw);
+    if (!parsed.ok) return { data: emptyAppData(), error: '本地记录格式损坏，原数据未覆盖。请先保留原备份，再导入有效备份或明确重置。' + parsed.error, blocked: true };
+    return { data: parsed.data, error: null, blocked: false };
   } catch {
-    return emptyAppData();
+    return { data: emptyAppData(), error: '无法读取浏览器存储。当前记录仅在本次页面中，请及时导出备份。', blocked: true };
   }
 }
 
-/** 校验导入的 JSON（宽松结构校验） */
-export function validateImported(text: string): { ok: true; data: AppData } | { ok: false; error: string } {
-  let obj: unknown;
-  try {
-    obj = JSON.parse(text);
-  } catch (e) {
-    return { ok: false, error: '不是合法的 JSON 文件。' };
-  }
-  const d = obj as AppData;
-  if (!d || typeof d !== 'object' || d.version !== 1 || typeof d.courses !== 'object' || d.courses === null) {
-    return { ok: false, error: '结构不符合算法远征备份格式（需要 version:1 和 courses 字段）。' };
-  }
-  return { ok: true, data: d };
+export function loadAppData(): AppData { return readStorageSnapshot().data; }
+export function persistAppData(data: AppData): string | null {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); return null; }
+  catch { return '保存失败，浏览器存储不可用或空间不足。当前修改仍在本页，请立即导出备份，避免刷新后丢失。'; }
 }
 
 interface ProgressContextValue {
   data: AppData;
+  storageError: string | null;
+  setExternalProblem: (id: string, status: ExternalProblemStatus, notes?: string) => void;
   get: (courseId: string) => CourseProgress;
   toggleDim: (courseId: string, dim: DimKey) => void;
   recordExercise: (courseId: string, exId: string, solved: boolean, wrongFirst: boolean, title?: string) => void;
@@ -117,15 +96,14 @@ interface ProgressContextValue {
 const ProgressContext = createContext<ProgressContextValue | null>(null);
 
 export function ProgressProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<AppData>(() => loadAppData());
+  const [initial] = useState(readStorageSnapshot);
+  const [data, setData] = useState<AppData>(initial.data);
+  const [storageError, setStorageError] = useState<string | null>(initial.error);
+  const [persistenceBlocked, setPersistenceBlocked] = useState(initial.blocked);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch {
-      // 隐私模式等场景下不可用：静默失败，导出功能仍可用
-    }
-  }, [data]);
+    if (!persistenceBlocked) setStorageError(persistAppData(data));
+  }, [data, persistenceBlocked]);
 
   const get = useCallback((courseId: string): CourseProgress => {
     return data.courses[courseId] || emptyCourseProgress();
@@ -140,7 +118,15 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo<ProgressContextValue>(() => ({
     data,
+    storageError,
     get,
+    setExternalProblem: (id, status, notes) => {
+      if (!id || ['__proto__', 'constructor', 'prototype'].includes(id)) return;
+      setData((old) => {
+        const now = new Date().toISOString();
+        return { ...old, savedAt: now, externalProblems: { ...old.externalProblems, [id]: { status, notes: notes ?? old.externalProblems?.[id]?.notes ?? '', updatedAt: now } } };
+      });
+    },
     toggleDim: (courseId, dim) => mutate(courseId, (p) => ({ ...p, dims: { ...p.dims, [dim]: !p.dims[dim] } })),
     recordExercise: (courseId, exId, solved, wrongFirst, title) =>
       mutate(courseId, (p) => {
@@ -164,10 +150,15 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     removeMistake: (courseId, date, text) =>
       mutate(courseId, (p) => ({ ...p, mistakes: p.mistakes.filter((m) => !(m.date === date && m.text === text)) })),
     bumpExperiment: (courseId) => mutate(courseId, (p) => ({ ...p, experiments: p.experiments + 1 })),
-    importData: (d) => setData(d),
-    resetAll: () => setData(emptyAppData()),
+    importData: (d) => {
+      // Validate even callers that did not use the file-import helper.
+      const normalized = normalizeAppData(d);
+      setData(normalized);
+      setPersistenceBlocked(false);
+    },
+    resetAll: () => { setData(emptyAppData()); setPersistenceBlocked(false); },
     exportJSON: () => JSON.stringify({ ...data, savedAt: new Date().toISOString() }, null, 2),
-  }), [data, get, mutate]);
+  }), [data, get, mutate, storageError]);
 
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;
 }

@@ -150,7 +150,7 @@ export function buildKmpBuildTrace(pRaw: string): KmpBuildEvent[] {
   }
 
   push('done', { p, pi: [...pi], i: m, j, cmpL: -1, cmpR: -1, assigned: -1, done: true }, L.done,
-    `构造完成。pi = [${pi.join(', ')}]。每格最多回退 O(log m) 次均摊，总时间 O(m)。`);
+    `构造完成。pi = [${pi.join(', ')}]。j 的总增加与总回退次数均为 O(m)，构造总时间 O(m)。`);
   return events;
 }
 
