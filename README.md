@@ -1,6 +1,8 @@
 # 算法远征 · Algorithm Expedition
 
-中文交互式算法学习网站：20 门 READY 课程，28 门仅规划课程。从 C++ 起步到算法与团队训练。无需账号、付费 API、后端或运行时 CDN。
+在线使用：https://xuwenboooo.github.io/algorithm-expedition/
+
+中文交互式算法学习网站：20 门 READY 课程，24 门仅规划课程。从 C++ 起步到算法与团队训练。无需账号、付费 API、后端或运行时 CDN。
 
 本项目是训练工具，不保证竞赛成绩。未实现运行用户 C++ 代码的在线判题。
 

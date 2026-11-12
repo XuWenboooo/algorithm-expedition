@@ -10,7 +10,7 @@ export function Home() {
       <h1 style={{ marginTop: 24 }}>⛰️ 算法远征 · 总览地图</h1>
       <p>
         从零基础 C++ 到区域赛训练的完整知识路线图。<b>{READY_COUNT} 门课程已真正实现</b>
-        （其中 13 门含可交互可视化实验室 + 完整推导 + 渐进练习 + 测试验证；1 门为团队训练工具课），
+        （其中 {ready.filter((c) => c.id !== 'team-training').length} 门含可交互可视化实验室 + 完整推导 + 渐进练习 + 测试验证；1 门为团队训练工具课），
         其余课程诚实标注为"仅规划"，绝不冒充完成。
       </p>
       <div className="card">
